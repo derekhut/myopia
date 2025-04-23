@@ -1,0 +1,63 @@
+<!--pages/camera/index.wxml-->
+<view class="container">
+  <!-- 错误提示 -->
+  <view wx:if="{{cameraError}}" class="error-container">
+    <text>{{errorMsg}}</text>
+    <button type="primary" bindtap="checkCameraPermission">重试</button>
+  </view>
+  
+  <block wx:if="{{!cameraError}}">
+    <!-- 使用直接可见的相机并应用CSS模糊效果 -->
+    <view class="display-container" style="width: 100%; height: 70vh;">
+      <camera 
+        wx:if="{{cameraActive}}" 
+        id="camera" 
+        class="display-camera"
+        style="filter: blur({{blurValue}}px);" 
+        device-position="back" 
+        flash="off" 
+        frame-size="medium"
+        binderror="handleCameraError">
+      </camera>
+      
+      <!-- 模糊效果测试区 -->
+      <view class="blur-indicator-container">
+        <view class="blur-indicator" style="filter: blur({{blurValue}}px);">
+          <view class="blur-test-text">ABC 123</view>
+        </view>
+      </view>
+      
+      <!-- 未启用相机时显示加载画面 -->
+      <view wx:if="{{!cameraActive}}" class="loading-view">
+        <text>正在启用相机...</text>
+      </view>
+    </view>
+
+    <!-- 对比模式已移除 -->
+    
+    <!-- 控制面板 -->
+    <view class="control-panel">
+      <text class="panel-title">近视程度: {{myopiaDiopter}} (度数: {{myopiaDegree}})</text>
+      
+      <!-- 滑块控制 -->
+      <slider min="0" max="500" value="{{myopiaDegree}}" activeColor="#3e9cfe" backgroundColor="#e9e9e9" 
+              block-size="20" block-color="#3e9cfe" bindchange="onDegreeChange" show-value="{{false}}" />
+      
+      <!-- 预设度数按钮 -->
+      <view class="preset-buttons">
+        <button size="mini" type="{{myopiaDegree === 0 ? 'primary' : 'default'}}" bindtap="setDegree" data-degree="0">正常</button>
+        <button size="mini" type="{{myopiaDegree === 100 ? 'primary' : 'default'}}" bindtap="setDegree" data-degree="100">100度</button>
+        <button size="mini" type="{{myopiaDegree === 300 ? 'primary' : 'default'}}" bindtap="setDegree" data-degree="300">300度</button>
+        <button size="mini" type="{{myopiaDegree === 500 ? 'primary' : 'default'}}" bindtap="setDegree" data-degree="500">500度</button>
+      </view>
+      
+      <!-- 对比模式已移除 -->
+      
+      <!-- 教育提示 -->
+      <view class="educational-tip">
+        <view class="tip-title">健康小贴士:</view>
+        <view class="tip-content">{{educationalTip}}</view>
+      </view>
+    </view>
+  </block>
+</view>

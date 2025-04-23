@@ -1,0 +1,17 @@
+{
+  "pages": [
+    "pages/ai/ai"
+  ],
+  "window": {
+    "navigationStyle": "default",
+    "navigationBarTitleText": "相机"
+  },
+  "renderer": "webview",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents",
+  "permission": {
+    "scope.camera": {
+      "desc": "需要使用您的相机功能"
+    }
+  }
+}
