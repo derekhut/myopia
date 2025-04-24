@@ -7,8 +7,15 @@
   </view>
   
   <block wx:if="{{!cameraError}}">
-    <!-- 使用直接可见的相机并应用CSS模糊效果 -->
-    <view class="display-container" style="width: 100%; height: 70vh;">
+    <!-- 模式切换按钮 -->
+    <view class="mode-switch-container">
+      <button class="mode-switch-btn {{displayMode === 'camera' ? 'active' : ''}}" bindtap="switchDisplayMode">
+        {{displayMode === 'camera' ? '相机模式' : '图片模式'}}
+      </button>
+    </view>
+    
+    <!-- 相机模式 -->
+    <view class="display-container" style="width: 100%; height: 70vh;" wx:if="{{displayMode === 'camera'}}">
       <camera 
         wx:if="{{cameraActive}}" 
         id="camera" 
@@ -32,8 +39,35 @@
         <text>正在启用相机...</text>
       </view>
     </view>
-
-    <!-- 对比模式已移除 -->
+    
+    <!-- 图片对比模式 -->
+    <view class="image-comparison-container" wx:if="{{displayMode === 'image'}}">
+      <!-- 场景选择栏 -->
+      <scroll-view class="scene-selector" scroll-x="true">
+        <block wx:for="{{sceneImages}}" wx:key="id">
+          <view class="scene-item {{currentSceneId === item.id ? 'active' : ''}}" 
+                bindtap="selectScene" data-sceneid="{{item.id}}">
+            {{item.name}}
+          </view>
+        </block>
+      </scroll-view>
+      
+      <!-- 图片对比展示 -->
+      <view class="comparison-view">
+        <!-- 正常视力图片 -->
+        <view class="comparison-half">
+          <text class="comparison-label">正常视力</text>
+          <image class="comparison-image" src="{{getCurrentScene().path}}" mode="aspectFill"></image>
+        </view>
+        
+        <!-- 近视视力图片 -->
+        <view class="comparison-half">
+          <text class="comparison-label">近视{{myopiaDegree}}度</text>
+          <image class="comparison-image blurred" src="{{getCurrentScene().path}}" 
+                 style="filter: blur({{blurValue}}px);" mode="aspectFill"></image>
+        </view>
+      </view>
+    </view>
     
     <!-- 控制面板 -->
     <view class="control-panel">

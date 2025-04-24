@@ -20,6 +20,36 @@ Page({
     
     // 性能相关
     deviceCapabilities: {},      // 设备能力信息
+
+    // 图片对比模式相关
+    displayMode: 'camera',       // 'camera' 或 'image'
+    sceneImages: [
+      {
+        id: 'cityscape',
+        name: '城市天际线',
+        path: '../../images/comparison/cityscape.jpg',
+        tip: '远眺城市景观可放松眼部肌肉，缓解视疲劳。每20分钟近距离用眼后，建议远眺20秒。'
+      },
+      {
+        id: 'city',
+        name: '城市街景',
+        path: '../../images/comparison/city.jpg',
+        tip: '在繁华的城市环境中，高度近视者可能难以辨认远处的路标和信号灯。保持良好视力对城市生活至关重要。'
+      },
+      {
+        id: 'street',
+        name: '街道标志',
+        path: '../../images/comparison/street.jpg',
+        tip: '中度近视可能导致无法看清街道标志，增加交通安全风险。定期检查视力并正确佩戴眼镜很重要。'
+      },
+      {
+        id: 'reading',
+        name: '阅读文本',
+        path: '../../images/comparison/reading.jpg',
+        tip: '阅读时保持30厘米以上距离，每隔40-50分钟休息10分钟，可减少近视发展。'
+      }
+    ],
+    currentSceneId: 'city',  // 当前选中的场景ID
   },
 
   /**
@@ -316,8 +346,68 @@ Page({
    */
   onShareAppMessage() {
     return {
-      title: '微信小程序 × MobileNet',
-      path: 'packageAPI/pages/ai/mobilenet/index',
+      title: '近视视界模拟器',
+      path: '/pages/ai/ai',
+      imageUrl: '/pages/images/comparison/city.jpg'
+    };
+  },
+  
+  /**
+   * 图片对比模式相关功能
+   */
+  
+  // 切换显示模式（相机/图片）
+  switchDisplayMode() {
+    const newMode = this.data.displayMode === 'camera' ? 'image' : 'camera';
+    
+    this.setData({
+      displayMode: newMode
+    });
+    
+    console.log(`切换显示模式为: ${newMode}`);
+    
+    // 如果切换回相机模式，确保相机已启动
+    if (newMode === 'camera' && !this.data.cameraActive) {
+      this.checkCameraPermission();
     }
+    
+    // 如果切换到图片模式，更新当前场景的教育提示
+    if (newMode === 'image') {
+      const currentScene = this.getCurrentScene();
+      if (currentScene) {
+        this.setData({
+          educationalTip: currentScene.tip
+        });
+      }
+    } else {
+      // 切换回相机模式时更新基于度数的教育提示
+      this.updateEducationalTip(this.data.myopiaDegree);
+    }
+  },
+  
+  // 选择场景
+  selectScene(e) {
+    const sceneId = e.currentTarget.dataset.sceneid;
+    
+    // 找到所选场景
+    const selectedScene = this.data.sceneImages.find(scene => scene.id === sceneId);
+    
+    if (selectedScene) {
+      this.setData({
+        currentSceneId: sceneId
+      });
+      
+      // 更新教育提示为场景特定的提示
+      this.setData({
+        educationalTip: selectedScene.tip
+      });
+      
+      console.log(`选择场景: ${selectedScene.name}`);
+    }
+  },
+  
+  // 获取当前选中的场景
+  getCurrentScene() {
+    return this.data.sceneImages.find(scene => scene.id === this.data.currentSceneId) || this.data.sceneImages[0];
   }
 })
